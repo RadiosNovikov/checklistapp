@@ -1,0 +1,95 @@
+{
+  "rooms": [
+    {
+      "id": "botiga",
+      "name": "Botiga",
+      "icon": "🏪",
+      "tasks": [
+        "Calibrar porta",
+        "Encendre TV groga",
+        "Amagar claus",
+        "Posar polvora"
+      ]
+    },
+    {
+      "id": "trastienda",
+      "name": "Trastienda",
+      "icon": "📦",
+      "tasks": [
+        "Tasca 1",
+        "Tasca 2",
+        "Tasca 3"
+      ]
+    },
+    {
+      "id": "despatx",
+      "name": "Despatx",
+      "icon": "🗄️",
+      "tasks": [
+        "Tasca 1",
+        "Tasca 2",
+        "Tasca 3"
+      ]
+    },
+    {
+      "id": "passadis",
+      "name": "Passadís",
+      "icon": "🚪",
+      "tasks": [
+        "Tasca 1",
+        "Tasca 2",
+        "Tasca 3"
+      ]
+    },
+    {
+      "id": "lab",
+      "name": "Lab",
+      "icon": "🧪",
+      "tasks": [
+        "Tasca 1",
+        "Tasca 2",
+        "Tasca 3"
+      ]
+    },
+    {
+      "id": "conducte",
+      "name": "Conducte",
+      "icon": "🔧",
+      "tasks": [
+        "Tasca 1",
+        "Tasca 2",
+        "Tasca 3"
+      ]
+    },
+    {
+      "id": "habitacio",
+      "name": "Habitació",
+      "icon": "🛏️",
+      "tasks": [
+        "Tasca 1",
+        "Tasca 2",
+        "Tasca 3"
+      ]
+    },
+    {
+      "id": "wc",
+      "name": "WC",
+      "icon": "🚿",
+      "tasks": [
+        "Tasca 1",
+        "Tasca 2",
+        "Tasca 3"
+      ]
+    },
+    {
+      "id": "control",
+      "name": "Control",
+      "icon": "🎛️",
+      "tasks": [
+        "Tasca 1",
+        "Tasca 2",
+        "Tasca 3"
+      ]
+    }
+  ]
+}

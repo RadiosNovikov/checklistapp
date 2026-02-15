@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Radios Novikov — Setup</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #0a0a0f;
+    --accent: #00e5a0;
+    --accent-glow: rgba(0, 229, 160, 0.15);
+    --accent-soft: rgba(0, 229, 160, 0.08);
+    --danger: #ff4757;
+    --danger-soft: rgba(255, 71, 87, 0.1);
+    --text: #e8e8f0;
+    --text-dim: #6b6b80;
+    --text-done: #4a4a60;
+    --surface: #1c1c2e;
+    --surface-light: #252540;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text);
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 30% 20%, rgba(0,229,160,0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(100,60,255,0.03) 0%, transparent 50%);
+    z-index: 0; pointer-events: none;
+  }
+
+  /* LOADING */
+  .loading-screen {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg-dark);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px; z-index: 500;
+    transition: opacity 0.3s;
+  }
+  .loading-screen.hidden { opacity: 0; pointer-events: none; }
+  .loading-spinner {
+    width: 32px; height: 32px;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  .loading-text { font-size: 14px; color: var(--text-dim); font-family: 'Space Mono', monospace; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* HEADER */
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.88);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px; min-height: 56px;
+  }
+  .header-title-area { flex: 1; cursor: default; }
+  .header-title-area.tappable {
+    cursor: pointer; border-radius: 10px;
+    margin: -6px -8px; padding: 6px 8px; transition: background 0.2s;
+  }
+  .header-title-area.tappable:active { background: rgba(255,255,255,0.05); }
+  .header-main {
+    font-weight: 700; font-size: 18px; letter-spacing: -0.3px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .header-sub {
+    font-size: 11px; color: var(--text-dim);
+    font-family: 'Space Mono', monospace; letter-spacing: 1px;
+    text-transform: uppercase; margin-top: 2px;
+  }
+  .header-room-icon { font-size: 22px; }
+  .header-counter {
+    font-family: 'Space Mono', monospace; font-size: 13px;
+    color: var(--text-dim); display: none; flex-shrink: 0;
+  }
+  .header-counter.visible { display: block; }
+  .header-counter .hc-done { color: var(--accent); }
+
+  /* ROOM MENU */
+  .room-menu { padding: 20px 16px 100px; position: relative; z-index: 1; }
+  .app-brand { text-align: center; padding: 20px 0 28px; }
+  .app-brand h1 { font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; }
+  .app-brand h1 .brand-accent { color: var(--accent); }
+  .app-brand p {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 3px;
+    color: var(--text-dim); font-family: 'Space Mono', monospace;
+  }
+  .section-label {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 2.5px;
+    color: var(--text-dim); margin-bottom: 16px; font-weight: 600; padding-left: 4px;
+  }
+  .room-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .room-card {
+    background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px; padding: 18px 16px; cursor: pointer;
+    transition: all 0.25s cubic-bezier(.4,0,.2,1); position: relative; overflow: hidden;
+  }
+  .room-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .room-card:active { transform: scale(0.96); background: var(--surface-light); }
+  .room-card.all-done { border-color: rgba(0,229,160,0.2); }
+  .room-card.all-done::before { opacity: 1; }
+  .room-icon { font-size: 26px; margin-bottom: 8px; display: block; }
+  .room-name { font-weight: 700; font-size: 15px; margin-bottom: 5px; }
+  .room-status { font-size: 12px; font-family: 'Space Mono', monospace; color: var(--text-dim); }
+  .room-status .done-count { color: var(--accent); }
+  .room-progress { margin-top: 10px; height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+  .room-progress-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+
+  /* TASK VIEW */
+  .task-view { display: none; padding: 12px 16px 100px; position: relative; z-index: 1; }
+  .task-view.active { display: block; }
+  .room-menu.hidden { display: none; }
+  .room-progress-top { height: 4px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; margin-bottom: 16px; }
+  .room-progress-top-bar { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.4s ease; }
+  .task-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .task-btn {
+    display: flex; align-items: center; gap: 14px; width: 100%;
+    background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px; padding: 18px 18px; cursor: pointer;
+    transition: all 0.2s cubic-bezier(.4,0,.2,1);
+    user-select: none; -webkit-user-select: none;
+    font-family: 'Outfit', sans-serif; color: var(--text); text-align: left;
+    outline: none; -webkit-appearance: none;
+  }
+  .task-btn:active { transform: scale(0.98); }
+  .task-btn.done { background: rgba(0,229,160,0.07); border-color: rgba(0,229,160,0.18); }
+  .task-status-icon {
+    width: 30px; height: 30px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700; transition: all 0.2s;
+    background: rgba(255,255,255,0.04); color: var(--text-dim);
+    border: 1.5px solid rgba(255,255,255,0.1);
+  }
+  .task-btn.done .task-status-icon {
+    background: var(--accent); border-color: var(--accent); color: var(--bg-dark);
+    box-shadow: 0 0 14px var(--accent-glow);
+  }
+  .task-btn-label { font-size: 16px; font-weight: 500; transition: all 0.2s; line-height: 1.3; flex: 1; }
+  .task-btn.done .task-btn-label {
+    color: var(--text-done); text-decoration: line-through;
+    text-decoration-color: rgba(255,255,255,0.08);
+  }
+
+  /* COMPLETION BANNER */
+  .completion-banner {
+    display: none; text-align: center; padding: 24px 20px;
+    background: rgba(0,229,160,0.06); border: 1px solid rgba(0,229,160,0.15);
+    border-radius: 18px; margin-top: 12px; animation: fadeInUp 0.4s ease;
+  }
+  .completion-banner.visible { display: block; }
+  .completion-banner .cb-icon { font-size: 36px; margin-bottom: 6px; }
+  .completion-banner .cb-title { font-size: 18px; font-weight: 700; margin-bottom: 3px; }
+  .completion-banner .cb-sub { font-size: 13px; color: var(--text-dim); }
+
+  /* BOTTOM BAR */
+  .bottom-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    padding: 10px 16px; padding-bottom: max(10px, env(safe-area-inset-bottom));
+    background: rgba(10,10,15,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.05); z-index: 50;
+    display: flex; justify-content: center; gap: 10px;
+  }
+  .bottom-btn {
+    background: var(--surface); border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text-dim); padding: 10px 18px; border-radius: 12px;
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    -webkit-appearance: none; outline: none;
+  }
+  .bottom-btn:active { transform: scale(0.95); background: var(--surface-light); }
+  .bottom-btn.danger { color: var(--danger); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    z-index: 200;
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .modal-overlay.visible { display: flex; }
+  .modal-box {
+    background: var(--surface); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; padding: 28px 24px; max-width: 320px; width: 100%;
+    text-align: center; animation: fadeInUp 0.25s ease;
+  }
+  .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .modal-text { font-size: 14px; color: var(--text-dim); margin-bottom: 24px; line-height: 1.4; }
+  .modal-buttons { display: flex; gap: 10px; }
+  .modal-btn {
+    flex: 1; padding: 14px; border-radius: 12px; border: none;
+    font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    -webkit-appearance: none; outline: none;
+  }
+  .modal-btn:active { transform: scale(0.95); }
+  .modal-btn-cancel { background: var(--surface-light); color: var(--text); }
+  .modal-btn-confirm { background: var(--danger); color: white; }
+
+  /* ERROR BANNER */
+  .error-banner {
+    display: none; padding: 12px 16px; margin: 12px 16px 0;
+    background: var(--danger-soft); border: 1px solid rgba(255,71,87,0.2);
+    border-radius: 12px; font-size: 13px; color: var(--danger);
+    text-align: center; z-index: 1; position: relative;
+  }
+  .error-banner.visible { display: block; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .room-card { animation: fadeInUp 0.4s ease both; }
+  .room-card:nth-child(2) { animation-delay: 0.03s; }
+  .room-card:nth-child(3) { animation-delay: 0.06s; }
+  .room-card:nth-child(4) { animation-delay: 0.09s; }
+  .room-card:nth-child(5) { animation-delay: 0.12s; }
+  .room-card:nth-child(6) { animation-delay: 0.15s; }
+  .room-card:nth-child(7) { animation-delay: 0.18s; }
+  .room-card:nth-child(8) { animation-delay: 0.21s; }
+  .room-card:nth-child(9) { animation-delay: 0.24s; }
+  .task-btn { animation: fadeInUp 0.3s ease both; }
+  .task-btn:nth-child(2) { animation-delay: 0.02s; }
+  .task-btn:nth-child(3) { animation-delay: 0.04s; }
+  .task-btn:nth-child(4) { animation-delay: 0.06s; }
+  .task-btn:nth-child(5) { animation-delay: 0.08s; }
+  .task-btn:nth-child(6) { animation-delay: 0.1s; }
+  .task-btn:nth-child(7) { animation-delay: 0.12s; }
+  .task-btn:nth-child(8) { animation-delay: 0.14s; }
+  .task-btn:nth-child(9) { animation-delay: 0.16s; }
+  .task-btn:nth-child(10) { animation-delay: 0.18s; }
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Carregant...</div>
+</div>
+
+<div class="header">
+  <div class="header-title-area" id="headerTitleArea">
+    <div class="header-main" id="headerMain">Radios Novikov</div>
+    <div class="header-sub" id="headerSub">escape room setup</div>
+  </div>
+  <div class="header-counter" id="headerCounter"></div>
+</div>
+
+<div class="room-menu" id="roomMenu">
+  <div class="app-brand">
+    <h1>Radios <span class="brand-accent">Novikov</span></h1>
+    <p>Setup checklist</p>
+  </div>
+  <div class="error-banner" id="errorBanner">No s'ha pogut carregar tasks.json — usant dades locals</div>
+  <div class="section-label">Sales</div>
+  <div class="room-grid" id="roomGrid"></div>
+</div>
+
+<div class="task-view" id="taskView">
+  <div class="room-progress-top">
+    <div class="room-progress-top-bar" id="topProgressBar"></div>
+  </div>
+  <div class="task-list" id="taskList"></div>
+  <div class="completion-banner" id="completionBanner">
+    <div class="cb-icon">🎉</div>
+    <div class="cb-title">Sala preparada!</div>
+    <div class="cb-sub">Totes les tasques completades</div>
+  </div>
+</div>
+
+<div class="bottom-bar" id="bottomBar">
+  <button class="bottom-btn" id="resetCurrentBtn" style="display:none;">↻ Reset sala</button>
+  <button class="bottom-btn danger" id="resetAllBtn">↻ Reset tot</button>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle">Confirmar</div>
+    <div class="modal-text" id="modalText">Estàs segur?</div>
+    <div class="modal-buttons">
+      <button class="modal-btn modal-btn-cancel" id="modalCancel">Cancel·lar</button>
+      <button class="modal-btn modal-btn-confirm" id="modalConfirm">Reset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var rooms = [];
+var checkState = {};
+var currentRoom = null;
+var pendingAction = null;
+
+// --- Persistence ---
+function saveChecks() { try { localStorage.setItem('rn_checks', JSON.stringify(checkState)); } catch(e) {} }
+function loadChecks() { try { var s = localStorage.getItem('rn_checks'); if (s) checkState = JSON.parse(s); } catch(e) {} }
+function getChecks(id) { if (!checkState[id]) checkState[id] = {}; return checkState[id]; }
+function getDoneCount(room) { var c = getChecks(room.id); return room.tasks.filter(function(_,i){ return c[i]===true; }).length; }
+
+// --- Hash tasks to detect changes ---
+function hashRooms(roomList) {
+  return roomList.map(function(r) { return r.id + ':' + r.tasks.join('|'); }).join(';;');
+}
+
+// --- Load tasks.json ---
+function loadTasks(callback) {
+  fetch('tasks.json?v=' + Date.now())
+    .then(function(res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      if (data && data.rooms && Array.isArray(data.rooms)) {
+        rooms = data.rooms;
+
+        // Check if tasks changed since last visit
+        var newHash = hashRooms(rooms);
+        var oldHash = '';
+        try { oldHash = localStorage.getItem('rn_tasks_hash') || ''; } catch(e) {}
+
+        if (oldHash && newHash !== oldHash) {
+          // Tasks were updated by owner — clear all check states
+          checkState = {};
+          saveChecks();
+        }
+
+        // Save current hash
+        try { localStorage.setItem('rn_tasks_hash', newHash); } catch(e) {}
+
+        document.getElementById('errorBanner').classList.remove('visible');
+        callback();
+      } else {
+        throw new Error('Invalid format');
+      }
+    })
+    .catch(function(err) {
+      console.warn('Could not load tasks.json:', err);
+      // Fallback: try to use cached rooms from localStorage
+      try {
+        var cached = localStorage.getItem('rn_rooms_cache');
+        if (cached) {
+          rooms = JSON.parse(cached);
+        }
+      } catch(e) {}
+
+      if (rooms.length === 0) {
+        // Hard fallback
+        rooms = [
+          { id: 'botiga', name: 'Botiga', icon: '🏪', tasks: ['Calibrar porta', 'Encendre TV groga', 'Amagar claus', 'Posar polvora'] },
+          { id: 'trastienda', name: 'Trastienda', icon: '📦', tasks: ['Tasca 1'] },
+          { id: 'despatx', name: 'Despatx', icon: '🗄️', tasks: ['Tasca 1'] },
+          { id: 'passadis', name: 'Passadís', icon: '🚪', tasks: ['Tasca 1'] },
+          { id: 'lab', name: 'Lab', icon: '🧪', tasks: ['Tasca 1'] },
+          { id: 'conducte', name: 'Conducte', icon: '🔧', tasks: ['Tasca 1'] },
+          { id: 'habitacio', name: 'Habitació', icon: '🛏️', tasks: ['Tasca 1'] },
+          { id: 'wc', name: 'WC', icon: '🚿', tasks: ['Tasca 1'] },
+          { id: 'control', name: 'Control', icon: '🎛️', tasks: ['Tasca 1'] },
+        ];
+      }
+      document.getElementById('errorBanner').classList.add('visible');
+      callback();
+    });
+}
+
+// --- Modal ---
+function showModal(title, text, onConfirm) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalText').textContent = text;
+  document.getElementById('modalOverlay').classList.add('visible');
+  pendingAction = onConfirm;
+}
+function hideModal() {
+  document.getElementById('modalOverlay').classList.remove('visible');
+  pendingAction = null;
+}
+document.getElementById('modalCancel').addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); hideModal(); });
+document.getElementById('modalConfirm').addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); if (pendingAction) pendingAction(); hideModal(); });
+document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target === this) hideModal(); });
+
+// --- Room Grid ---
+function renderRooms() {
+  var grid = document.getElementById('roomGrid');
+  grid.innerHTML = '';
+  rooms.forEach(function(room) {
+    var done = getDoneCount(room);
+    var total = room.tasks.length;
+    var allDone = done === total && total > 0;
+    var card = document.createElement('div');
+    card.className = 'room-card' + (allDone ? ' all-done' : '');
+    card.setAttribute('data-room', room.id);
+    card.innerHTML = '<span class="room-icon">' + room.icon + '</span>' +
+      '<div class="room-name">' + room.name + '</div>' +
+      '<div class="room-status"><span class="done-count">' + done + '</span> / ' + total + '</div>' +
+      '<div class="room-progress"><div class="room-progress-bar" style="width:' + (total?(done/total)*100:0) + '%"></div></div>';
+    grid.appendChild(card);
+  });
+}
+
+document.getElementById('roomGrid').addEventListener('click', function(e) {
+  var card = e.target.closest('.room-card');
+  if (card) {
+    var roomId = card.getAttribute('data-room');
+    if (roomId) openRoom(roomId);
+  }
+});
+
+// --- Navigation ---
+function openRoom(roomId) {
+  currentRoom = rooms.find(function(r){ return r.id === roomId; });
+  document.getElementById('roomMenu').classList.add('hidden');
+  document.getElementById('taskView').classList.add('active');
+  document.getElementById('headerCounter').classList.add('visible');
+  document.getElementById('resetCurrentBtn').style.display = '';
+  var area = document.getElementById('headerTitleArea');
+  area.classList.add('tappable');
+  document.getElementById('headerMain').innerHTML = '<span class="header-room-icon">' + currentRoom.icon + '</span> ' + currentRoom.name;
+  document.getElementById('headerSub').innerHTML = '← Tornar a sales';
+  renderTasks();
+}
+
+function goBack() {
+  document.getElementById('roomMenu').classList.remove('hidden');
+  document.getElementById('taskView').classList.remove('active');
+  document.getElementById('headerCounter').classList.remove('visible');
+  document.getElementById('resetCurrentBtn').style.display = 'none';
+  var area = document.getElementById('headerTitleArea');
+  area.classList.remove('tappable');
+  document.getElementById('headerMain').textContent = 'Radios Novikov';
+  document.getElementById('headerSub').textContent = 'escape room setup';
+  currentRoom = null;
+  renderRooms();
+}
+
+document.getElementById('headerTitleArea').addEventListener('click', function() {
+  if (this.classList.contains('tappable')) goBack();
+});
+
+// --- Task List ---
+function renderTasks() {
+  if (!currentRoom) return;
+  var c = getChecks(currentRoom.id);
+  var total = currentRoom.tasks.length;
+  var done = getDoneCount(currentRoom);
+  document.getElementById('headerCounter').innerHTML = '<span class="hc-done">' + done + '</span>/' + total;
+  document.getElementById('topProgressBar').style.width = (total?(done/total)*100:0) + '%';
+  var list = document.getElementById('taskList');
+  list.innerHTML = '';
+  currentRoom.tasks.forEach(function(task, i) {
+    var isDone = c[i] === true;
+    var btn = document.createElement('button');
+    btn.className = 'task-btn' + (isDone ? ' done' : '');
+    btn.setAttribute('data-index', i);
+    btn.innerHTML = '<div class="task-status-icon">' + (isDone ? '✓' : (i+1)) + '</div><div class="task-btn-label">' + task + '</div>';
+    list.appendChild(btn);
+  });
+  var banner = document.getElementById('completionBanner');
+  if (done === total && total > 0) banner.classList.add('visible');
+  else banner.classList.remove('visible');
+}
+
+document.getElementById('taskList').addEventListener('click', function(e) {
+  var btn = e.target.closest('.task-btn');
+  if (btn) {
+    var idx = parseInt(btn.getAttribute('data-index'));
+    if (!isNaN(idx)) toggleTask(idx);
+  }
+});
+
+function toggleTask(i) {
+  var c = getChecks(currentRoom.id);
+  c[i] = !c[i];
+  if (!c[i]) delete c[i];
+  saveChecks();
+  renderTasks();
+}
+
+// --- Reset ---
+document.getElementById('resetCurrentBtn').addEventListener('click', function(e) {
+  e.preventDefault(); e.stopPropagation();
+  if (currentRoom) {
+    showModal(
+      'Reset ' + currentRoom.name + '?',
+      "Es desmarcaran totes les tasques d'aquesta sala.",
+      function() { checkState[currentRoom.id] = {}; saveChecks(); renderTasks(); }
+    );
+  }
+});
+
+document.getElementById('resetAllBtn').addEventListener('click', function(e) {
+  e.preventDefault(); e.stopPropagation();
+  showModal(
+    'Reset tot?',
+    'Es desmarcaran totes les tasques de totes les sales.',
+    function() {
+      checkState = {}; saveChecks();
+      if (currentRoom) renderTasks(); else renderRooms();
+    }
+  );
+});
+
+// --- Init ---
+loadChecks();
+loadTasks(function() {
+  // Cache rooms for offline fallback
+  try { localStorage.setItem('rn_rooms_cache', JSON.stringify(rooms)); } catch(e) {}
+  renderRooms();
+  // Hide loading
+  setTimeout(function() {
+    document.getElementById('loadingScreen').classList.add('hidden');
+  }, 300);
+});
+</script>
+</body>
+</html>
