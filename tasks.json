@@ -16,9 +16,13 @@
       "name": "Trastienda",
       "icon": "📦",
       "tasks": [
-        "Tasca 1",
-        "Tasca 2",
-        "Tasca 3"
+        "Lector Botiga Col·locat",
+        "Targeta Despatx Penjada",
+        "Plom botiga col·locat",
+        "Plom trastienda al calaix",
+        "Porta trastienda oberta",
+        "Packet personalitzxat",
+        "Telefon penjat"
       ]
     },
     {
@@ -26,9 +30,17 @@
       "name": "Despatx",
       "icon": "🗄️",
       "tasks": [
-        "Tasca 1",
-        "Tasca 2",
-        "Tasca 3"
+        "Claus Caixeta Mapa",
+        "Imans Caixeta Mapa",
+        "Cinta a la camara",
+        "Projector reset",
+        "SERN i Radio reset",
+        "3 Tarjetes al mapa",
+        "Tarjetes amagades",
+        "Cendrer",
+        "Plom SERN calaix",
+        "Claus Alarma",
+        "Casco"
       ]
     },
     {
@@ -36,9 +48,10 @@
       "name": "Passadís",
       "icon": "🚪",
       "tasks": [
-        "Tasca 1",
-        "Tasca 2",
-        "Tasca 3"
+        "Quadres col·locats",
+        "Carrega radioactiva",
+        "Rellotge amagat",
+        "Llanterna"
       ]
     },
     {
@@ -46,9 +59,10 @@
       "name": "Lab",
       "icon": "🧪",
       "tasks": [
-        "Tasca 1",
-        "Tasca 2",
-        "Tasca 3"
+        "Cable blau",
+        "Palanca futur",
+        "Piles mando",
+        "Ventilador al 10"
       ]
     },
     {
@@ -66,9 +80,9 @@
       "name": "Habitació",
       "icon": "🛏️",
       "tasks": [
-        "Tasca 1",
-        "Tasca 2",
-        "Tasca 3"
+        "Tancar la porta",
+        "Posar el llit aball",
+        "Calendaris al calaix"
       ]
     },
     {
@@ -76,9 +90,9 @@
       "name": "WC",
       "icon": "🚿",
       "tasks": [
-        "Tasca 1",
-        "Tasca 2",
-        "Tasca 3"
+        "Tornavís desaigüe",
+        "Lampara penjada",
+        "Canvi de bombeta"
       ]
     },
     {
@@ -86,9 +100,9 @@
       "name": "Control",
       "icon": "🎛️",
       "tasks": [
-        "Tasca 1",
-        "Tasca 2",
-        "Tasca 3"
+        "Cortina negra mirall",
+        "Clau col·locada per disparar",
+        "Posar llauna amb piles"
       ]
     }
   ]
