@@ -5,10 +5,83 @@
       "name": "Botiga",
       "icon": "🏪",
       "tasks": [
-        "Calibrar porta",
+        "Clau Caixa Enregistradora",
         "Encendre TV groga",
-        "Amagar claus",
-        "Posar polvora"
+        "Posar polvora",
+        "Calibrar porta"
+      ]
+    },
+    {
+      "id": "lab",
+      "name": "Lab",
+      "icon": "🧪",
+      "tasks": [
+        "Tirar manec conducte",
+        "Tancar Reixa",
+        "Ventilador a 11 i tancat",
+        "Palanca passat",
+        "Carga radioactiva negra col·locada",
+        "Comporta tancada",
+        "Cassete rebobinat, dins armari",
+        "Reset U235 i tancar",
+        "Waste tancat",
+        "Reset gasos Lab",
+        "TM - obrir porta (iman)",
+        "Cable blau calaix taula",
+        "Tarjeta lab calaix taula",
+        "Recollir llaunes",
+        "Treu Piles mando",
+        "Clau Quarentena",
+        "Tancar porta"
+      ]
+    },
+    {
+      "id": "habitacio",
+      "name": "Habitació",
+      "icon": "🛏️",
+      "tasks": [
+        "Reset gas Conducte",
+        "Collar Reixa",
+        "Despenjar el llit",
+        "Walkman calaix",
+        "Calendaris al calaix"
+        "Mando TV sense piles tauleta"
+      ]
+    },
+    {
+      "id": "wc",
+      "name": "WC",
+      "icon": "🚿",
+      "tasks": [
+        "Tornavís desaigüe",
+        "Lampara penjada",
+        "Canvi de bombeta",
+        "Revisar paper"
+      ]
+    },
+    {
+      "id": "passadis",
+      "name": "Passadís",
+      "icon": "🚪",
+      "tasks": [
+        "Quadres des-ordenats",
+        "Carrega dins rellotge",
+        "Columna Rellotge",
+        "Reset gas WC",
+        "Llanterna + check"
+      ]
+    },
+    {
+      "id": "control",
+      "name": "Control",
+      "icon": "🎛️",
+      "tasks": [
+        "Tancar trampilla TM amb balda",
+        "Cortina negra mirall",
+        "Clau bona catapulta",
+        "Carregar catapulta",
+        "Posar llauna amb piles",
+        "Preparar packet"
       ]
     },
     {
@@ -20,9 +93,15 @@
         "Targeta Despatx Penjada",
         "Plom botiga col·locat",
         "Plom trastienda al calaix",
+        "Plom passadís al sac",
         "Porta trastienda oberta",
-        "Packet personalitzxat",
-        "Telefon penjat"
+        "Packet personalitzat (N3)",
+        "Telefon penjat",
+        "Full nou llibreta",
+        "Repondre llapis",
+        "Hoja de pedidos (EN/ES)",
+        "Clauer a la taula",
+        "Reset gas transtienda"
       ]
     },
     {
@@ -30,79 +109,20 @@
       "name": "Despatx",
       "icon": "🗄️",
       "tasks": [
+        "Projector OFF",
         "Claus Caixeta Mapa",
-        "Imans Caixeta Mapa",
-        "Cinta a la camara",
-        "Projector reset",
-        "SERN i Radio reset",
-        "3 Tarjetes al mapa",
-        "Tarjetes amagades",
-        "Cendrer",
+        "Imans Caixeta i Mapa",
+        "QSL Portugal i Irlanda lleixa",
+        "QSL Japo al calaix",
         "Plom SERN calaix",
-        "Claus Alarma",
-        "Casco"
-      ]
-    },
-    {
-      "id": "passadis",
-      "name": "Passadís",
-      "icon": "🚪",
-      "tasks": [
-        "Quadres col·locats",
-        "Carrega radioactiva",
-        "Rellotge amagat",
-        "Llanterna"
-      ]
-    },
-    {
-      "id": "lab",
-      "name": "Lab",
-      "icon": "🧪",
-      "tasks": [
-        "Cable blau",
-        "Palanca futur",
-        "Piles mando",
-        "Ventilador al 10"
-      ]
-    },
-    {
-      "id": "conducte",
-      "name": "Conducte",
-      "icon": "🔧",
-      "tasks": [
-        "Tasca 1",
-        "Tasca 2",
-        "Tasca 3"
-      ]
-    },
-    {
-      "id": "habitacio",
-      "name": "Habitació",
-      "icon": "🛏️",
-      "tasks": [
-        "Tancar la porta",
-        "Posar el llit aball",
-        "Calendaris al calaix"
-      ]
-    },
-    {
-      "id": "wc",
-      "name": "WC",
-      "icon": "🚿",
-      "tasks": [
-        "Tornavís desaigüe",
-        "Lampara penjada",
-        "Canvi de bombeta"
-      ]
-    },
-    {
-      "id": "control",
-      "name": "Control",
-      "icon": "🎛️",
-      "tasks": [
-        "Cortina negra mirall",
-        "Clau col·locada per disparar",
-        "Posar llauna amb piles"
+        "Tancar calaix i cendrer",
+        "Cinta a la camara",
+        "QSL Maletin i Archivador",
+        "Carpesano (EN/ES) calaix + QSL",
+        "SERN i Radio reset",
+        "Casco",
+        "Claus Alarma (la dolenta)",
+        "Tancar porta"
       ]
     }
   ]
