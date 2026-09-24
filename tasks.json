@@ -5,6 +5,7 @@
       "name": "Botiga",
       "icon": "🏪",
       "tasks": [
+        "Deixar Walkie",
         "Clau Caixa Enregistradora",
         "Encendre TV groga",
         "Posar polvora",
@@ -54,9 +55,11 @@
       "icon": "🚿",
       "tasks": [
         "Tornavís desaigüe",
-        "Lampara penjada",
         "Canvi de bombeta",
-        "Revisar paper"
+        "Lampara penjada",
+        "Tarjeta hab pantalons rentadora",
+        "Revisar paper",
+        "Tancar Porta"
       ]
     },
     {
@@ -64,24 +67,12 @@
       "name": "Passadís",
       "icon": "🚪",
       "tasks": [
-        "Quadres des-ordenats",
+        "Llanterna + check",
+        "Reset gas WC",
+        "Tancar porta Storage",
         "Carrega dins rellotge",
         "Columna Rellotge",
-        "Reset gas WC",
-        "Llanterna + check"
-      ]
-    },
-    {
-      "id": "control",
-      "name": "Control",
-      "icon": "🎛️",
-      "tasks": [
-        "Tancar trampilla TM amb balda",
-        "Cortina negra mirall",
-        "Clau bona catapulta",
-        "Carregar catapulta",
-        "Posar llauna amb piles",
-        "Preparar packet"
+        "Quadres des-ordenats"
       ]
     },
     {
@@ -117,12 +108,26 @@
         "Plom SERN calaix",
         "Tancar calaix i cendrer",
         "Cinta a la camara",
-        "QSL Maletin i Archivador",
+        "QSL Maletin, Archivador, Pissarra",
         "Carpesano (EN/ES) calaix + QSL",
         "SERN i Radio reset",
         "Casco",
         "Claus Alarma (la dolenta)",
         "Tancar porta"
+      ]
+    },
+    {
+      "id": "control",
+      "name": "Control",
+      "icon": "🎛️",
+      "tasks": [
+        "Tancar trampilla TM amb balda",
+        "Cortina negra mirall",
+        "Clau bona catapulta",
+        "Carregar catapulta",
+        "Posar llauna amb piles",
+        "Preparar packet",
+        "Tancar portes i gomes"
       ]
     }
   ]
