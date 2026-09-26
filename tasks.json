@@ -5,10 +5,11 @@
       "name": "Botiga",
       "icon": "🏪",
       "tasks": [
+        "Posar polvora",
         "Deixar Walkie",
         "Clau Caixa Enregistradora",
+        "Tarjeta de sortida",
         "Encendre TV groga",
-        "Posar polvora",
         "Calibrar porta"
       ]
     },
@@ -128,6 +129,7 @@
         "Posar llauna amb piles",
         "Preparar packet",
         "Tancar portes i gomes",
+        "Apagar llum (nomes neó)",
         "Setejar MODE / LANG / PLAYERS"
       ]
     }
