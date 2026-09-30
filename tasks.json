@@ -10,7 +10,7 @@
         "Clau Caixa Enregistradora",
         "Tarjeta de sortida",
         "Encendre TV groga",
-        "Calibrar porta"
+        "Calibrar porta (botó C)"
       ]
     },
     {
@@ -44,7 +44,7 @@
       "tasks": [
         "Reset gas Conducte",
         "Collar Reixa",
-        "Despenjar el llit",
+        "Despenjar el llit i fixar potes",
         "Walkman calaix",
         "Calendaris al calaix",
         "Mando TV sense piles tauleta"
@@ -56,7 +56,8 @@
       "icon": "🚿",
       "tasks": [
         "Tornavís desaigüe",
-        "Canvi de bombeta",
+        "Colocar bombeta Normal",
+        "Emportar-se la UV",
         "Lampara penjada",
         "Tarjeta hab pantalons rentadora",
         "Revisar paper",
@@ -73,7 +74,11 @@
         "Tancar porta Storage",
         "Carrega dins rellotge",
         "Columna Rellotge",
-        "Quadres des-ordenats"
+        "Quadres des-ordenats",
+         "Lector Botiga Col·locat",
+        "Targeta Despatx Penjada",
+        "Plom botiga col·locat",
+        "Plom trastienda al calaix"
       ]
     },
     {
@@ -81,10 +86,6 @@
       "name": "Trastienda",
       "icon": "📦",
       "tasks": [
-        "Lector Botiga Col·locat",
-        "Targeta Despatx Penjada",
-        "Plom botiga col·locat",
-        "Plom trastienda al calaix",
         "Plom passadís al sac",
         "Porta trastienda oberta",
         "Packet personalitzat (N3)",
