@@ -1,140 +1,166 @@
 {
-  "rooms": [
+  "modes": [
     {
-      "id": "botiga",
-      "name": "Botiga",
-      "icon": "🏪",
-      "tasks": [
-        "Posar polvora",
-        "Deixar Walkie",
-        "Clau Caixa Enregistradora",
-        "Tarjeta de sortida",
-        "Encendre TV groga",
-        "Calibrar porta (botó C)"
+      "id": "first_setup",
+      "name": "First Setup",
+      "icon": "☀️",
+      "description": "Inici de jornada",
+      "rooms": [
+        {
+          "id": "fs_general",
+          "name": "General",
+          "icon": "⚡",
+          "tasks": [
+            "Tasca 1",
+            "Tasca 2",
+            "Tasca 3"
+          ]
+        }
       ]
     },
     {
-      "id": "lab",
-      "name": "Lab",
-      "icon": "🧪",
-      "tasks": [
-        "Tirar manec conducte",
-        "Tancar Reixa",
-        "Ventilador a 11 i tancat",
-        "Palanca passat",
-        "Carga radioactiva negra col·locada",
-        "Comporta tancada",
-        "Cassete rebobinat, dins armari (CA/ES/EN)",
-        "Reset U235 i tancar",
-        "Waste tancat",
-        "Reset gasos Lab",
-        "TM - obrir porta (iman)",
-        "Cable blau armari taula",
-        "Tarjeta lab armari taula",
-        "NO tancar el armari de la taula!",
-        "Recollir llaunes",
-        "Treu Piles mando",
-        "Clau Quarentena",
-        "Tancar porta"
-      ]
-    },
-    {
-      "id": "habitacio",
-      "name": "Habitació",
-      "icon": "🛏️",
-      "tasks": [
-        "Reset gas Conducte",
-        "Collar Reixa",
-        "Despenjar el llit i fixar potes",
-        "Walkman calaix",
-        "Calendaris al calaix",
-        "Mando TV sense piles tauleta"
-      ]
-    },
-    {
-      "id": "wc",
-      "name": "WC",
-      "icon": "🚿",
-      "tasks": [
-        "Tornavís desaigüe",
-        "Colocar bombeta Normal",
-        "Emportar-se la UV",
-        "Lampara penjada",
-        "Tarjeta hab pantalons rentadora",
-        "Revisar paper",
-        "Tancar Porta"
-      ]
-    },
-    {
-      "id": "passadis",
-      "name": "Passadís",
-      "icon": "🚪",
-      "tasks": [
-        "Llanterna + check",
-        "Reset gas WC",
-        "Tancar porta Storage",
-        "Carrega dins rellotge",
-        "Columna Rellotge",
-        "Quadres des-ordenats",
-         "Lector Botiga Col·locat",
-        "Targeta Despatx Penjada",
-        "Plom botiga col·locat",
-        "Plom trastienda al calaix"
-      ]
-    },
-    {
-      "id": "trastienda",
-      "name": "Trastienda",
-      "icon": "📦",
-      "tasks": [
-        "Plom passadís al sac",
-        "Porta trastienda oberta",
-        "Packet personalitzat (N3)",
-        "Telefon penjat",
-        "Full nou llibreta",
-        "Repondre llapis",
-        "Hoja de pedidos (EN/ES)",
-        "Clauer a la taula",
-        "Reset gas transtienda"
-      ]
-    },
-    {
-      "id": "despatx",
-      "name": "Despatx",
-      "icon": "🗄️",
-      "tasks": [
-        "Projector OFF",
-        "Resetejar Bandeja Projector",
-        "Claus Caixeta Mapa",
-        "Imans Caixeta i Mapa",
-        "QSL Portugal i Irlanda lleixa",
-        "QSL Japo al calaix",
-        "Plom SERN calaix",
-        "Tancar calaix i cendrer",
-        "Cinta a la camara",
-        "QSL Maletin, Archivador, Pissarra",
-        "Carpesano (EN/ES) calaix + QSL",
-        "SERN i Radio reset",
-        "Casco",
-        "Claus Alarma (la dolenta)",
-        "Tancar porta"
-      ]
-    },
-    {
-      "id": "control",
-      "name": "Control",
-      "icon": "🎛️",
-      "tasks": [
-        "Tancar trampilla TM amb balda",
-        "Cortina negra mirall",
-        "Clau bona catapulta",
-        "Carregar catapulta",
-        "Posar llauna amb piles",
-        "Preparar packet",
-        "Tancar portes i gomes",
-        "Apagar llum (nomes neó)",
-        "Parar enllumenat de servei",
-        "Setejar MODE / LANG / PLAYERS"
+      "id": "session_setup",
+      "name": "Session Setup",
+      "icon": "🔄",
+      "description": "Entre sessions",
+      "rooms": [
+        {
+          "id": "botiga",
+          "name": "Botiga",
+          "icon": "🏪",
+          "tasks": [
+            "Posar polvora",
+            "Deixar Walkie",
+            "Clau Caixa Enregistradora",
+            "Tarjeta de sortida",
+            "Encendre TV groga",
+            "Calibrar porta (botó C)"
+          ]
+        },
+        {
+          "id": "lab",
+          "name": "Lab",
+          "icon": "🧪",
+          "tasks": [
+            "Tirar manec conducte",
+            "Tancar Reixa",
+            "Ventilador a 11 i tancat",
+            "Palanca passat",
+            "Carga radioactiva negra col·locada",
+            "Comporta tancada",
+            "Cassete rebobinat, dins armari (CA/ES/EN)",
+            "Reset U235 i tancar",
+            "Waste tancat",
+            "Reset gasos Lab",
+            "TM - obrir porta (iman)",
+            "Cable blau armari taula",
+            "Tarjeta lab armari taula",
+            "NO tancar el armari de la taula!",
+            "Recollir llaunes",
+            "Treu Piles mando",
+            "Clau Quarentena",
+            "Tancar porta"
+          ]
+        },
+        {
+          "id": "habitacio",
+          "name": "Habitació",
+          "icon": "🛏️",
+          "tasks": [
+            "Reset gas Conducte",
+            "Collar Reixa",
+            "Despenjar el llit i fixar potes",
+            "Walkman calaix",
+            "Calendaris al calaix",
+            "Mando TV sense piles tauleta"
+          ]
+        },
+        {
+          "id": "wc",
+          "name": "WC",
+          "icon": "🚿",
+          "tasks": [
+            "Tornavís desaigüe",
+            "Colocar bombeta Normal",
+            "Emportar-se la UV",
+            "Lampara penjada",
+            "Tarjeta hab pantalons rentadora",
+            "Revisar paper",
+            "Tancar Porta"
+          ]
+        },
+        {
+          "id": "passadis",
+          "name": "Passadís",
+          "icon": "🚪",
+          "tasks": [
+            "Llanterna + check",
+            "Reset gas WC",
+            "Tancar porta Storage",
+            "Carrega dins rellotge",
+            "Columna Rellotge",
+            "Quadres des-ordenats",
+            "Lector Botiga Col·locat",
+            "Targeta Despatx Penjada",
+            "Plom botiga col·locat",
+            "Plom trastienda al calaix"
+          ]
+        },
+        {
+          "id": "trastienda",
+          "name": "Trastienda",
+          "icon": "📦",
+          "tasks": [
+            "Plom passadís al sac",
+            "Porta trastienda oberta",
+            "Packet personalitzat (N3)",
+            "Telefon penjat",
+            "Full nou llibreta",
+            "Repondre llapis",
+            "Hoja de pedidos (EN/ES)",
+            "Clauer a la taula",
+            "Reset gas transtienda"
+          ]
+        },
+        {
+          "id": "despatx",
+          "name": "Despatx",
+          "icon": "🗄️",
+          "tasks": [
+            "Projector OFF",
+            "Resetejar Bandeja Projector",
+            "Claus Caixeta Mapa",
+            "Imans Caixeta i Mapa",
+            "QSL Portugal i Irlanda lleixa",
+            "QSL Japo al calaix",
+            "Plom SERN calaix",
+            "Tancar calaix i cendrer",
+            "Cinta a la camara",
+            "QSL Maletin, Archivador, Pissarra",
+            "Carpesano (EN/ES) calaix + QSL",
+            "SERN i Radio reset",
+            "Casco",
+            "Claus Alarma (la dolenta)",
+            "Tancar porta"
+          ]
+        },
+        {
+          "id": "control",
+          "name": "Control",
+          "icon": "🎛️",
+          "tasks": [
+            "Tancar trampilla TM amb balda",
+            "Cortina negra mirall",
+            "Clau bona catapulta",
+            "Carregar catapulta",
+            "Posar llauna amb piles",
+            "Preparar packet",
+            "Tancar portes i gomes",
+            "Apagar llum (nomes neó)",
+            "Parar enllumenat de servei",
+            "Setejar MODE / LANG / PLAYERS"
+          ]
+        }
       ]
     }
   ]
