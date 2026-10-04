@@ -85,13 +85,27 @@
   .header-counter.visible { display: block; }
   .header-counter .hc-done { color: var(--accent); }
 
-  /* MODE INDICATOR — compact inline bar */
+  /* MODE INDICATOR — tappable to cycle */
   .mode-bar {
     display: flex; align-items: center; justify-content: center;
-    gap: 8px;
     padding: 10px 16px 6px;
     position: relative; z-index: 1;
     user-select: none; -webkit-user-select: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mode-bar:active .mode-bar-inner { transform: scale(0.96); }
+  .mode-bar-inner {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 8px 16px;
+    transition: all 0.2s;
+  }
+  .mode-bar-arrow {
+    font-size: 12px; color: var(--text-dim); opacity: 0.5;
+    font-family: 'Space Mono', monospace;
   }
   .mode-bar-label {
     font-size: 13px; font-weight: 600; color: var(--accent);
@@ -100,7 +114,7 @@
   }
   .mode-bar-label .mode-icon { font-size: 16px; }
   .mode-bar-dots {
-    display: flex; gap: 5px; margin-left: 8px;
+    display: flex; gap: 5px; margin-left: 4px;
   }
   .mode-dot {
     width: 6px; height: 6px; border-radius: 50%;
@@ -111,10 +125,6 @@
     background: var(--accent);
     box-shadow: 0 0 6px var(--accent-glow);
     width: 18px; border-radius: 3px;
-  }
-  .mode-bar-hint {
-    font-size: 10px; color: var(--text-dim); opacity: 0.4;
-    font-family: 'Space Mono', monospace;
   }
 
   /* ROOM MENU */
@@ -194,24 +204,11 @@
   .completion-banner.visible, .all-done-banner.visible { display: block; }
   .cb-icon, .adb-icon { font-size: 36px; margin-bottom: 6px; }
   .cb-title, .adb-title { font-size: 18px; font-weight: 700; margin-bottom: 3px; }
-  .cb-sub, .adb-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 14px; }
-  .cb-next {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--accent); color: var(--bg-dark);
-    padding: 12px 24px; border-radius: 12px;
-    font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700;
-    border: none; cursor: pointer; -webkit-appearance: none; outline: none; transition: all 0.2s;
+  .cb-sub, .adb-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 10px; }
+  .cb-next-label {
+    font-size: 15px; font-weight: 700; color: var(--accent);
+    letter-spacing: -0.2px;
   }
-  .cb-next:active { transform: scale(0.95); }
-  .adb-btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--surface-light); color: var(--text);
-    padding: 12px 24px; border-radius: 12px;
-    font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
-    border: 1px solid rgba(255,255,255,0.1);
-    cursor: pointer; -webkit-appearance: none; outline: none; transition: all 0.2s;
-  }
-  .adb-btn:active { transform: scale(0.95); }
 
   /* BOTTOM BAR */
   .bottom-bar {
@@ -318,9 +315,12 @@
 
 <div class="room-menu" id="roomMenu">
   <div class="mode-bar" id="modeBar">
-    <div class="mode-bar-label" id="modeLabel"><span class="mode-icon" id="modeIcon"></span><span id="modeName"></span></div>
-    <div class="mode-bar-dots" id="modeDots"></div>
-    <div class="mode-bar-hint">← swipe →</div>
+    <div class="mode-bar-inner">
+      <span class="mode-bar-arrow">‹</span>
+      <div class="mode-bar-label" id="modeLabel"><span class="mode-icon" id="modeIcon"></span><span id="modeName"></span></div>
+      <div class="mode-bar-dots" id="modeDots"></div>
+      <span class="mode-bar-arrow">›</span>
+    </div>
   </div>
   <div class="error-banner" id="errorBanner">No s'ha pogut carregar tasks.json — usant dades locals</div>
   <div class="section-label" id="sectionLabel">Sales</div>
@@ -336,13 +336,13 @@
     <div class="cb-icon">🎉</div>
     <div class="cb-title">Sala preparada!</div>
     <div class="cb-sub">Totes les tasques completades</div>
-    <button class="cb-next" id="nextRoomBtn"><span>→</span> <span id="nextRoomLabel">Següent sala</span></button>
+    <div class="cb-next-label">Següent → <span id="nextRoomLabel"></span></div>
   </div>
   <div class="all-done-banner" id="allDoneBanner">
     <div class="adb-icon">🏆</div>
     <div class="adb-title">Tot preparat!</div>
     <div class="adb-sub">Totes les sales estan llestes</div>
-    <button class="adb-btn" id="backToMenuBtn">← Tornar al menú</button>
+    <div class="cb-next-label">← Tornar al menú</div>
   </div>
 </div>
 
@@ -368,7 +368,6 @@ var currentModeIdx = 0;
 var checkState = {};
 var currentRoom = null;
 var pendingAction = null;
-var swipeStartX = 0, swipeCurrentX = 0, isSwiping = false;
 
 function saveChecks() { try { localStorage.setItem('rn_checks_v2', JSON.stringify(checkState)); } catch(e) {} }
 function loadChecks() { try { var s = localStorage.getItem('rn_checks_v2'); if (s) checkState = JSON.parse(s); } catch(e) {} }
@@ -442,29 +441,23 @@ function updateModeBar() {
   }
 }
 
-function switchMode(idx, direction) {
-  if (idx < 0 || idx >= modes.length || idx === currentModeIdx) return;
-  currentModeIdx = idx;
+function cycleMode() {
+  if (modes.length <= 1) return;
+  var nextIdx = (currentModeIdx + 1) % modes.length;
+  var direction = 'left';
+  currentModeIdx = nextIdx;
   updateModeBar();
   var grid = document.getElementById('roomGrid');
   grid.classList.remove('slide-left', 'slide-right');
-  void grid.offsetWidth; // force reflow
-  grid.classList.add(direction === 'left' ? 'slide-left' : 'slide-right');
+  void grid.offsetWidth;
+  grid.classList.add('slide-' + direction);
   renderRooms();
 }
 
-// Swipe detection on room menu
-document.getElementById('roomMenu').addEventListener('touchstart', function(e) {
-  swipeStartX = e.touches[0].clientX; swipeCurrentX = swipeStartX; isSwiping = true;
-}, { passive: true });
-document.getElementById('roomMenu').addEventListener('touchmove', function(e) {
-  if (isSwiping) swipeCurrentX = e.touches[0].clientX;
-}, { passive: true });
-document.getElementById('roomMenu').addEventListener('touchend', function() {
-  if (!isSwiping) return; isSwiping = false;
-  var dx = swipeCurrentX - swipeStartX;
-  if (dx < -60) switchMode(currentModeIdx + 1, 'left');
-  else if (dx > 60) switchMode(currentModeIdx - 1, 'right');
+// Tap mode bar to cycle
+document.getElementById('modeBar').addEventListener('click', function(e) {
+  e.preventDefault(); e.stopPropagation();
+  cycleMode();
 });
 
 // --- Modal ---
@@ -535,12 +528,12 @@ document.getElementById('headerTitleArea').addEventListener('click', function() 
   if (this.classList.contains('tappable')) goBack();
 });
 
-document.getElementById('nextRoomBtn').addEventListener('click', function(e) {
+document.getElementById('completionBanner').addEventListener('click', function(e) {
   e.preventDefault(); e.stopPropagation();
   var next = getNextPendingRoom(); if (next) openRoom(next.id);
 });
 
-document.getElementById('backToMenuBtn').addEventListener('click', function(e) {
+document.getElementById('allDoneBanner').addEventListener('click', function(e) {
   e.preventDefault(); e.stopPropagation(); goBack();
 });
 
