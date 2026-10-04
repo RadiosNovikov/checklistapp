@@ -24,7 +24,7 @@
         "Palanca passat",
         "Carga radioactiva negra col·locada",
         "Comporta tancada",
-        "Cassete rebobinat, dins armari",
+        "Cassete rebobinat, dins armari (CA/ES/EN)",
         "Reset U235 i tancar",
         "Waste tancat",
         "Reset gasos Lab",
@@ -133,6 +133,7 @@
         "Preparar packet",
         "Tancar portes i gomes",
         "Apagar llum (nomes neó)",
+        "Parar enllumenat de servei",
         "Setejar MODE / LANG / PLAYERS"
       ]
     }
