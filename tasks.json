@@ -58,6 +58,7 @@
             "Collar Reixa",
             "Despenjar el llit i fixar potes",
             "Walkman al calaix",
+            "Clauer taquilla al calaix",
             "Calendaris al calaix",
             "Mando TV sense piles a tauleta",
             "Ordenar habitació",
@@ -104,7 +105,6 @@
           "icon": "📦",
           "tasks": [
             "Plom 10A al sac",
-            "Clauer Taquilla rera porta",
             "Porta trastienda oberta",
             "Comprovar porta trastienda",
             "Packet personalitzat a taquilla (N3)",
@@ -178,6 +178,7 @@
           "tasks": [
             "Calibrar porta botó C (Botiga)",
             "Colocar tarjetero botiga",
+            "Obrir porta trastienda",
             "Caixeta imans habitació",
             "Porta Time Machine",
             "Tancar U235",
