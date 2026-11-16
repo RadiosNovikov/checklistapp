@@ -2,10 +2,11 @@
 <html lang="ca">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Radios Novikov — Setup</title>
+<meta name="theme-color" content="#0a0a0f">
+<title>Radios Novikov — Game Master</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -23,7 +24,7 @@
   }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
     background: var(--bg-dark);
     color: var(--text);
     min-height: 100dvh;
@@ -36,11 +37,12 @@
                 radial-gradient(ellipse at 70% 80%, rgba(100,60,255,0.03) 0%, transparent 50%);
     z-index: 0; pointer-events: none;
   }
+  button { font-family: inherit; color: inherit; -webkit-appearance: none; appearance: none; }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   /* LOADING */
   .loading-screen {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: var(--bg-dark);
+    position: fixed; inset: 0; background: var(--bg-dark);
     display: flex; align-items: center; justify-content: center;
     flex-direction: column; gap: 16px; z-index: 500; transition: opacity 0.3s;
   }
@@ -60,22 +62,25 @@
     backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
     border-bottom: 1px solid rgba(255,255,255,0.05);
     padding: 12px 20px;
-    display: flex; align-items: center; gap: 12px; min-height: 52px;
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+    display: flex; align-items: center; gap: 10px; min-height: 52px;
   }
-  .header-title-area { flex: 1; cursor: default; }
-  .header-title-area.tappable {
-    cursor: pointer; border-radius: 10px;
-    margin: -6px -8px; padding: 6px 8px; transition: background 0.2s;
+  .back-btn {
+    display: none; width: 40px; height: 40px; flex-shrink: 0; margin-left: -8px;
+    border-radius: 12px; border: none; background: transparent;
+    font-size: 28px; line-height: 1; color: var(--accent); cursor: pointer;
   }
-  .header-title-area.tappable:active { background: rgba(255,255,255,0.05); }
+  .back-btn.visible { display: flex; align-items: center; justify-content: center; }
+  .back-btn:active { background: rgba(255,255,255,0.06); }
+  .header-title-area { flex: 1; min-width: 0; }
   .header-main {
     font-weight: 700; font-size: 17px; letter-spacing: -0.3px;
     display: flex; align-items: center; gap: 8px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .header-sub {
     font-size: 11px; color: var(--text-dim);
-    font-family: 'Space Mono', monospace; letter-spacing: 1px;
-    text-transform: uppercase; margin-top: 1px;
+    font-family: 'Space Mono', monospace; letter-spacing: 0.5px; margin-top: 1px;
   }
   .header-room-icon { font-size: 20px; }
   .header-counter {
@@ -85,65 +90,61 @@
   .header-counter.visible { display: block; }
   .header-counter .hc-done { color: var(--accent); }
 
-  /* MODE INDICATOR — tappable to cycle */
-  .mode-bar {
-    display: flex; align-items: center; justify-content: center;
-    padding: 10px 16px 6px;
-    position: relative; z-index: 1;
-    user-select: none; -webkit-user-select: none;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .mode-bar:active .mode-bar-inner { transform: scale(0.96); }
-  .mode-bar-inner {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--surface);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 8px 16px;
-    transition: all 0.2s;
-  }
-  .mode-bar-arrow {
-    font-size: 12px; color: var(--text-dim); opacity: 0.5;
-    font-family: 'Space Mono', monospace;
-  }
-  .mode-bar-label {
-    font-size: 13px; font-weight: 600; color: var(--accent);
-    display: flex; align-items: center; gap: 6px;
-    transition: opacity 0.25s;
-  }
-  .mode-bar-label .mode-icon { font-size: 16px; }
-  .mode-bar-dots {
-    display: flex; gap: 5px; margin-left: 4px;
-  }
-  .mode-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: rgba(255,255,255,0.15);
-    transition: all 0.3s;
-  }
-  .mode-dot.active {
-    background: var(--accent);
-    box-shadow: 0 0 6px var(--accent-glow);
-    width: 18px; border-radius: 3px;
-  }
+  .view { display: none; position: relative; z-index: 1; }
+  .view.active { display: block; }
 
-  /* ROOM MENU */
-  .room-menu { padding: 4px 16px 100px; position: relative; z-index: 1; }
-  .section-label {
-    font-size: 12px; text-transform: uppercase; letter-spacing: 2.5px;
-    color: var(--text-dim); margin-bottom: 10px; font-weight: 600; padding-left: 4px;
+  /* HOME — MODE CARDS */
+  .home { padding: 18px 16px calc(32px + env(safe-area-inset-bottom, 0px)); }
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .mode-card {
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between;
+    min-height: 156px; padding: 18px 16px 20px;
+    background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 22px; text-align: left; cursor: pointer;
+    transition: transform 0.2s cubic-bezier(.4,0,.2,1), background 0.2s;
   }
+  .mode-card:active { transform: scale(0.97); background: var(--surface-light); }
+  .mode-emoji { font-size: 44px; line-height: 1; }
+  .mode-word { font-size: 25px; font-weight: 800; letter-spacing: -0.6px; line-height: 1.05; margin-top: 16px; }
+  .mode-desc { font-size: 13px; color: var(--text-dim); margin-top: 3px; }
+  .mode-meta {
+    font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text-dim);
+    position: absolute; top: 18px; right: 16px;
+  }
+  .mode-meta .done-count { color: var(--accent); }
+  .mode-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(255,255,255,0.05); }
+  .mode-progress-bar { height: 100%; background: var(--accent); transition: width 0.4s ease; }
+  .mode-card.in-progress { border-color: rgba(0,229,160,0.22); }
+  .mode-card.complete { border-color: rgba(0,229,160,0.35); background: rgba(0,229,160,0.06); }
+  .mode-card.complete .mode-meta { color: var(--accent); }
+
+  .mode-card.featured {
+    grid-column: span 2; flex-direction: row; align-items: center; justify-content: flex-start;
+    gap: 18px; min-height: 132px; padding: 20px;
+    background: linear-gradient(135deg, rgba(0,229,160,0.10), rgba(0,229,160,0.02) 60%), var(--surface);
+    border-color: rgba(0,229,160,0.18);
+  }
+  .mode-card.featured .mode-emoji { font-size: 58px; }
+  .mode-card.featured .mode-word { font-size: 32px; margin-top: 0; }
+
+  .group-label { font-size: 13px; color: var(--text-dim); font-weight: 600; margin: 28px 4px 10px; }
+  .mode-grid.small .mode-card { min-height: 108px; padding: 14px 14px 16px; border-radius: 18px; }
+  .mode-grid.small .mode-emoji { font-size: 28px; }
+  .mode-grid.small .mode-word { font-size: 19px; margin-top: 10px; }
+  .mode-grid.small .mode-meta { top: 14px; right: 14px; }
+
+  /* ROOM GRID (multi-room modes) */
+  .rooms { padding: 16px 16px 100px; }
   .room-grid { display: flex; flex-direction: column; gap: 10px; }
   .room-card {
-    background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 16px; padding: 16px 16px; cursor: pointer;
+    width: 100%; background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px; padding: 16px; cursor: pointer; text-align: left;
     transition: all 0.25s cubic-bezier(.4,0,.2,1); position: relative; overflow: hidden;
   }
   .room-card::before {
-    content: ''; position: absolute; top: 0; left: 0;
-    width: 100%; height: 3px;
-    background: linear-gradient(90deg, var(--accent), transparent);
-    opacity: 0; transition: opacity 0.3s;
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent); opacity: 0; transition: opacity 0.3s;
   }
   .room-card:active { transform: scale(0.98); background: var(--surface-light); }
   .room-card.all-done { border-color: rgba(0,229,160,0.2); }
@@ -159,29 +160,25 @@
   .room-arrow { color: var(--text-dim); font-size: 18px; flex-shrink: 0; opacity: 0.4; }
 
   /* TASK VIEW */
-  .task-view { display: none; padding: 12px 16px 100px; position: relative; z-index: 1; }
-  .task-view.active { display: block; }
-  .room-menu.hidden { display: none; }
+  .tasks { padding: 12px 16px 100px; }
   .room-progress-top { height: 4px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; margin-bottom: 16px; }
   .room-progress-top-bar { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.4s ease; }
   .task-list { display: flex; flex-direction: column; gap: 8px; }
   .task-btn {
     display: flex; align-items: center; gap: 14px; width: 100%;
     background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px; padding: 18px 18px; cursor: pointer;
+    border-radius: 14px; padding: 18px; cursor: pointer;
     transition: all 0.2s cubic-bezier(.4,0,.2,1);
-    user-select: none; -webkit-user-select: none;
-    font-family: 'Outfit', sans-serif; color: var(--text); text-align: left;
-    outline: none; -webkit-appearance: none;
+    user-select: none; -webkit-user-select: none; text-align: left;
   }
   .task-btn:active { transform: scale(0.98); }
   .task-btn.done { background: rgba(0,229,160,0.07); border-color: rgba(0,229,160,0.18); }
   .task-status-icon {
     width: 30px; height: 30px; border-radius: 10px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    font-size: 15px; font-weight: 700; transition: all 0.2s;
+    font-size: 14px; font-weight: 700; transition: all 0.2s;
     background: rgba(255,255,255,0.04); color: var(--text-dim);
-    border: 1.5px solid rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.1); font-family: 'Space Mono', monospace;
   }
   .task-btn.done .task-status-icon {
     background: var(--accent); border-color: var(--accent); color: var(--bg-dark);
@@ -194,20 +191,21 @@
   }
 
   /* BANNERS */
-  .completion-banner, .all-done-banner {
-    display: none; text-align: center; padding: 24px 20px;
+  .banner {
+    display: none; width: 100%; text-align: center; padding: 24px 20px;
     background: rgba(0,229,160,0.06); border: 1px solid rgba(0,229,160,0.15);
     border-radius: 18px; margin-top: 12px; animation: fadeInUp 0.4s ease;
-    cursor: pointer; transition: all 0.2s;
+    cursor: pointer; transition: transform 0.2s;
   }
-  .completion-banner:active, .all-done-banner:active { transform: scale(0.98); }
-  .completion-banner.visible, .all-done-banner.visible { display: block; }
-  .cb-icon, .adb-icon { font-size: 36px; margin-bottom: 6px; }
-  .cb-title, .adb-title { font-size: 18px; font-weight: 700; margin-bottom: 3px; }
-  .cb-sub, .adb-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 10px; }
-  .cb-next-label {
-    font-size: 15px; font-weight: 700; color: var(--accent);
-    letter-spacing: -0.2px;
+  .banner:active { transform: scale(0.98); }
+  .banner.visible { display: block; }
+  .banner-icon { font-size: 36px; margin-bottom: 6px; }
+  .banner-title { font-size: 18px; font-weight: 700; margin-bottom: 3px; }
+  .banner-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; }
+  .banner-action { font-size: 15px; font-weight: 700; color: var(--accent); letter-spacing: -0.2px; }
+  .banner-action.pill {
+    display: inline-block; background: var(--accent); color: var(--bg-dark);
+    padding: 12px 20px; border-radius: 12px;
   }
 
   /* BOTTOM BAR */
@@ -216,21 +214,20 @@
     padding: 10px 16px; padding-bottom: max(10px, env(safe-area-inset-bottom));
     background: rgba(10,10,15,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid rgba(255,255,255,0.05); z-index: 50;
-    display: flex; justify-content: center; gap: 10px;
+    display: none; justify-content: center; gap: 10px;
   }
+  .bottom-bar.visible { display: flex; }
   .bottom-btn {
     background: var(--surface); border: 1px solid rgba(255,255,255,0.08);
     color: var(--text-dim); padding: 10px 18px; border-radius: 12px;
-    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s; -webkit-appearance: none; outline: none;
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
   }
   .bottom-btn:active { transform: scale(0.95); background: var(--surface-light); }
   .bottom-btn.danger { color: var(--danger); }
 
   /* MODAL */
   .modal-overlay {
-    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.7);
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
     backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     z-index: 200; align-items: center; justify-content: center; padding: 24px;
   }
@@ -245,8 +242,7 @@
   .modal-buttons { display: flex; gap: 10px; }
   .modal-btn {
     flex: 1; padding: 14px; border-radius: 12px; border: none;
-    font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s; -webkit-appearance: none; outline: none;
+    font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;
   }
   .modal-btn:active { transform: scale(0.95); }
   .modal-btn-cancel { background: var(--surface-light); color: var(--text); }
@@ -254,48 +250,26 @@
 
   /* ERROR */
   .error-banner {
-    display: none; padding: 12px 16px; margin: 0 0 12px;
+    display: none; padding: 12px 16px; margin: 0 0 14px;
     background: var(--danger-soft); border: 1px solid rgba(255,71,87,0.2);
-    border-radius: 12px; font-size: 13px; color: var(--danger);
-    text-align: center; z-index: 1; position: relative;
+    border-radius: 12px; font-size: 13px; color: var(--danger); text-align: center;
   }
   .error-banner.visible { display: block; }
-
-  /* Mode transition */
-  .room-grid.slide-left { animation: slideLeft 0.25s ease; }
-  .room-grid.slide-right { animation: slideRight 0.25s ease; }
-  @keyframes slideLeft {
-    from { opacity: 0; transform: translateX(40px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-  @keyframes slideRight {
-    from { opacity: 0; transform: translateX(-40px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
 
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(14px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .room-card { animation: fadeInUp 0.35s ease both; }
-  .room-card:nth-child(2) { animation-delay: 0.03s; }
-  .room-card:nth-child(3) { animation-delay: 0.06s; }
-  .room-card:nth-child(4) { animation-delay: 0.09s; }
-  .room-card:nth-child(5) { animation-delay: 0.12s; }
-  .room-card:nth-child(6) { animation-delay: 0.15s; }
-  .room-card:nth-child(7) { animation-delay: 0.18s; }
-  .room-card:nth-child(8) { animation-delay: 0.21s; }
-  .room-card:nth-child(9) { animation-delay: 0.24s; }
-  .task-btn { animation: fadeInUp 0.3s ease both; }
-  .task-btn:nth-child(2) { animation-delay: 0.02s; }
-  .task-btn:nth-child(3) { animation-delay: 0.04s; }
-  .task-btn:nth-child(4) { animation-delay: 0.06s; }
-  .task-btn:nth-child(5) { animation-delay: 0.08s; }
-  .task-btn:nth-child(6) { animation-delay: 0.1s; }
-  .task-btn:nth-child(7) { animation-delay: 0.12s; }
-  .task-btn:nth-child(8) { animation-delay: 0.14s; }
-  .task-btn:nth-child(9) { animation-delay: 0.16s; }
-  .task-btn:nth-child(10) { animation-delay: 0.18s; }
+  .home.active .mode-card { animation: fadeInUp 0.35s ease both; }
+  .home.active .mode-card:nth-child(2) { animation-delay: 0.04s; }
+  .home.active .mode-card:nth-child(3) { animation-delay: 0.08s; }
+  .home.active .mode-card:nth-child(4) { animation-delay: 0.12s; }
+  .home.active .mode-card:nth-child(5) { animation-delay: 0.16s; }
+  .room-card, .task-btn { animation: fadeInUp 0.3s ease both; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
 </style>
 </head>
 <body>
@@ -306,53 +280,60 @@
 </div>
 
 <div class="header">
-  <div class="header-title-area" id="headerTitleArea">
+  <button class="back-btn" id="backBtn" aria-label="Tornar">‹</button>
+  <div class="header-title-area">
     <div class="header-main" id="headerMain">Radios Novikov</div>
-    <div class="header-sub" id="headerSub">escape room setup</div>
+    <div class="header-sub" id="headerSub">game master</div>
   </div>
   <div class="header-counter" id="headerCounter"></div>
 </div>
 
-<div class="room-menu" id="roomMenu">
-  <div class="mode-bar" id="modeBar">
-    <div class="mode-bar-inner">
-      <span class="mode-bar-arrow">‹</span>
-      <div class="mode-bar-label" id="modeLabel"><span class="mode-icon" id="modeIcon"></span><span id="modeName"></span></div>
-      <div class="mode-bar-dots" id="modeDots"></div>
-      <span class="mode-bar-arrow">›</span>
-    </div>
+<!-- HOME: mode selector -->
+<div class="view home" id="homeView">
+  <div class="error-banner" id="errorBanner">No s'ha pogut carregar tasks.json. Fent servir l'última versió guardada.</div>
+  <div class="mode-grid" id="modeGrid"></div>
+  <div id="maintenanceSection">
+    <div class="group-label">Manteniment</div>
+    <div class="mode-grid small" id="maintenanceGrid"></div>
   </div>
-  <div class="error-banner" id="errorBanner">No s'ha pogut carregar tasks.json — usant dades locals</div>
-  <div class="section-label" id="sectionLabel">Sales</div>
-  <div class="room-grid" id="roomGrid"></div>
 </div>
 
-<div class="task-view" id="taskView">
-  <div class="room-progress-top">
-    <div class="room-progress-top-bar" id="topProgressBar"></div>
-  </div>
+<!-- ROOMS: for modes with several rooms -->
+<div class="view rooms" id="roomsView">
+  <div class="room-grid" id="roomGrid"></div>
+  <button class="banner finish-banner" id="finishBannerRooms">
+    <div class="banner-icon">🏆</div>
+    <div class="banner-title">Tot preparat!</div>
+    <div class="banner-sub">La llista es buidarà per a la propera vegada</div>
+    <div class="banner-action pill">Acabar i tornar al menú</div>
+  </button>
+</div>
+
+<!-- TASKS -->
+<div class="view tasks" id="taskView">
+  <div class="room-progress-top"><div class="room-progress-top-bar" id="topProgressBar"></div></div>
   <div class="task-list" id="taskList"></div>
-  <div class="completion-banner" id="completionBanner">
-    <div class="cb-icon">🎉</div>
-    <div class="cb-title">Sala preparada!</div>
-    <div class="cb-sub">Totes les tasques completades</div>
-    <div class="cb-next-label">Següent → <span id="nextRoomLabel"></span></div>
-  </div>
-  <div class="all-done-banner" id="allDoneBanner">
-    <div class="adb-icon">🏆</div>
-    <div class="adb-title">Tot preparat!</div>
-    <div class="adb-sub">Totes les sales estan llestes</div>
-    <div class="cb-next-label">← Tornar al menú</div>
-  </div>
+  <button class="banner" id="nextBanner">
+    <div class="banner-icon">🎉</div>
+    <div class="banner-title">Sala preparada!</div>
+    <div class="banner-sub">Totes les tasques completades</div>
+    <div class="banner-action">Següent: <span id="nextRoomLabel"></span></div>
+  </button>
+  <button class="banner finish-banner" id="finishBannerTasks">
+    <div class="banner-icon">🏆</div>
+    <div class="banner-title">Tot fet!</div>
+    <div class="banner-sub">La llista es buidarà per a la propera vegada</div>
+    <div class="banner-action pill">Acabar i tornar al menú</div>
+  </button>
 </div>
 
 <div class="bottom-bar" id="bottomBar">
-  <button class="bottom-btn" id="resetCurrentBtn" style="display:none;">↻ Reset sala</button>
-  <button class="bottom-btn danger" id="resetAllBtn">↻ Reset tot</button>
+  <button class="bottom-btn" id="resetRoomBtn">↻ Reset sala</button>
+  <button class="bottom-btn danger" id="resetModeBtn">↻ Reset tot</button>
 </div>
 
 <div class="modal-overlay" id="modalOverlay">
-  <div class="modal-box">
+  <div class="modal-box" role="dialog" aria-modal="true">
     <div class="modal-title" id="modalTitle">Confirmar</div>
     <div class="modal-text" id="modalText">Estàs segur?</div>
     <div class="modal-buttons">
@@ -364,241 +345,277 @@
 
 <script>
 var modes = [];
-var currentModeIdx = 0;
 var checkState = {};
-var currentRoom = null;
 var pendingAction = null;
+var route = { mode: null, room: null, level: 0 };
 
-function saveChecks() { try { localStorage.setItem('rn_checks_v2', JSON.stringify(checkState)); } catch(e) {} }
-function loadChecks() { try { var s = localStorage.getItem('rn_checks_v2'); if (s) checkState = JSON.parse(s); } catch(e) {} }
-function stateKey(modeId, roomId) { return modeId + '::' + roomId; }
-function getChecks(modeId, roomId) { var k = stateKey(modeId, roomId); if (!checkState[k]) checkState[k] = {}; return checkState[k]; }
-function getDoneCount(mode, room) { var c = getChecks(mode.id, room.id); return room.tasks.filter(function(_,i){ return c[i]===true; }).length; }
-function isRoomComplete(mode, room) { return getDoneCount(mode, room) === room.tasks.length && room.tasks.length > 0; }
-function currentMode() { return modes[currentModeIdx]; }
-function currentRooms() { var m = currentMode(); return m ? m.rooms : []; }
+function $(id) { return document.getElementById(id); }
+function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-function getNextPendingRoom() {
-  var rm = currentRooms();
-  if (!currentRoom || rm.length <= 1) return null;
-  var ci = rm.indexOf(currentRoom);
-  for (var o = 1; o < rm.length; o++) {
-    var idx = (ci + o) % rm.length;
-    if (!isRoomComplete(currentMode(), rm[idx])) return rm[idx];
+// ---------- State ----------
+function saveChecks() { try { localStorage.setItem('rn_checks_v3', JSON.stringify(checkState)); } catch(e) {} }
+function loadChecks() { try { var s = localStorage.getItem('rn_checks_v3'); if (s) checkState = JSON.parse(s) || {}; } catch(e) {} }
+function stateKey(m, r) { return m.id + '::' + r.id; }
+function getChecks(m, r) { var k = stateKey(m, r); if (!checkState[k]) checkState[k] = {}; return checkState[k]; }
+function doneCount(m, r) { var c = getChecks(m, r); return r.tasks.filter(function(_, i) { return c[i] === true; }).length; }
+function roomComplete(m, r) { return r.tasks.length > 0 && doneCount(m, r) === r.tasks.length; }
+function modeTotals(m) {
+  var d = 0, t = 0, rd = 0;
+  m.rooms.forEach(function(r) { d += doneCount(m, r); t += r.tasks.length; if (roomComplete(m, r)) rd++; });
+  return { done: d, total: t, roomsDone: rd, rooms: m.rooms.length };
+}
+function modeComplete(m) { return m.rooms.every(function(r) { return roomComplete(m, r); }); }
+function isSingle(m) { return m.rooms.length === 1; }
+function resetMode(m) { m.rooms.forEach(function(r) { checkState[stateKey(m, r)] = {}; }); saveChecks(); }
+function findMode(id) { return modes.find(function(m) { return m.id === id; }) || null; }
+function findRoom(m, id) { return m ? (m.rooms.find(function(r) { return r.id === id; }) || null) : null; }
+
+function nextPendingRoom(m, current) {
+  if (isSingle(m)) return null;
+  var ci = m.rooms.indexOf(current);
+  for (var o = 1; o < m.rooms.length; o++) {
+    var r = m.rooms[(ci + o) % m.rooms.length];
+    if (!roomComplete(m, r)) return r;
   }
   return null;
 }
 
+// ---------- Loading ----------
 function hashModes(ml) {
   return ml.map(function(m) {
     return m.id + ':{' + m.rooms.map(function(r) { return r.id + ':' + r.tasks.join('|'); }).join(';;') + '}';
   }).join('|||');
 }
 
-function loadTasks(callback) {
+function loadTasks(cb) {
   fetch('tasks.json?v=' + Date.now())
     .then(function(res) { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
     .then(function(data) {
-      if (data && data.modes && Array.isArray(data.modes)) {
-        modes = data.modes;
-      } else if (data && data.rooms && Array.isArray(data.rooms)) {
-        modes = [{ id: 'session_setup', name: 'Session Setup', icon: '🔄', description: 'Entre sessions', rooms: data.rooms }];
-      } else { throw new Error('Invalid format'); }
-      var newHash = hashModes(modes);
-      var oldHash = ''; try { oldHash = localStorage.getItem('rn_tasks_hash_v2') || ''; } catch(e) {}
+      if (data && Array.isArray(data.modes)) modes = data.modes;
+      else if (data && Array.isArray(data.rooms)) modes = [{ id: 'session_setup', name: 'Sessió', icon: '🔄', description: 'Entre sessions', featured: true, rooms: data.rooms }];
+      else throw new Error('Invalid format');
+      var newHash = hashModes(modes), oldHash = '';
+      try { oldHash = localStorage.getItem('rn_tasks_hash_v3') || ''; } catch(e) {}
       if (oldHash && newHash !== oldHash) { checkState = {}; saveChecks(); }
-      try { localStorage.setItem('rn_tasks_hash_v2', newHash); } catch(e) {}
-      document.getElementById('errorBanner').classList.remove('visible');
-      callback();
+      try { localStorage.setItem('rn_tasks_hash_v3', newHash); localStorage.setItem('rn_modes_cache_v3', JSON.stringify(modes)); } catch(e) {}
+      cb();
     })
     .catch(function(err) {
       console.warn('Could not load tasks.json:', err);
-      try { var cached = localStorage.getItem('rn_modes_cache'); if (cached) modes = JSON.parse(cached); } catch(e) {}
-      if (modes.length === 0) {
-        modes = [{ id: 'session_setup', name: 'Session Setup', icon: '🔄', description: 'Entre sessions', rooms: [
-          { id: 'botiga', name: 'Botiga', icon: '🏪', tasks: ['Calibrar porta', 'Encendre TV groga'] }
-        ]}];
+      try { var c = localStorage.getItem('rn_modes_cache_v3'); if (c) modes = JSON.parse(c); } catch(e) {}
+      if (!modes.length) {
+        modes = [{ id: 'session_setup', name: 'Sessió', icon: '🔄', description: 'Entre sessions', featured: true,
+          rooms: [{ id: 'botiga', name: 'Botiga', icon: '🏪', tasks: ['Posar polvora', 'Calibrar porta entrada (botó C mando gran)'] }] }];
       }
-      document.getElementById('errorBanner').classList.add('visible');
-      callback();
+      $('errorBanner').classList.add('visible');
+      cb();
     });
 }
 
-// --- Mode switcher ---
-function updateModeBar() {
-  var mode = currentMode();
-  if (!mode) return;
-  document.getElementById('modeIcon').textContent = mode.icon;
-  document.getElementById('modeName').textContent = mode.name;
-  var dots = document.getElementById('modeDots');
-  dots.innerHTML = '';
-  if (modes.length > 1) {
-    modes.forEach(function(_, i) {
-      var d = document.createElement('div');
-      d.className = 'mode-dot' + (i === currentModeIdx ? ' active' : '');
-      dots.appendChild(d);
-    });
-  }
+// ---------- Routing (hash + history, so the phone's back gesture works) ----------
+function parseRoute() {
+  var h = location.hash.replace(/^#/, ''), parts = h ? h.split('/') : [];
+  var m = findMode(parts[0]);
+  if (!m) return { mode: null, room: null, level: 0 };
+  if (isSingle(m)) return { mode: m, room: m.rooms[0], level: 1 };
+  var r = parts[1] ? findRoom(m, parts[1]) : null;
+  return { mode: m, room: r, level: r ? 2 : 1 };
+}
+function baseUrl() { return location.pathname + location.search; }
+function go(hash) { history.pushState(null, '', '#' + hash); render(); }
+function replaceWith(hash) { history.replaceState(null, '', '#' + hash); render(); }
+function goUp() { history.back(); }
+function goHome() { if (route.level > 0) history.go(-route.level); else render(); }
+window.addEventListener('popstate', render);
+
+// Opened directly on a deep link (e.g. after a reload): rebuild the history so "back" stays in the app
+function rebuildHistory() {
+  var r = parseRoute();
+  history.replaceState(null, '', baseUrl());
+  if (r.mode) history.pushState(null, '', '#' + r.mode.id);
+  if (r.mode && r.room && !isSingle(r.mode)) history.pushState(null, '', '#' + r.mode.id + '/' + r.room.id);
 }
 
-function cycleMode() {
-  if (modes.length <= 1) return;
-  var nextIdx = (currentModeIdx + 1) % modes.length;
-  var direction = 'left';
-  currentModeIdx = nextIdx;
-  updateModeBar();
-  var grid = document.getElementById('roomGrid');
-  grid.classList.remove('slide-left', 'slide-right');
-  void grid.offsetWidth;
-  grid.classList.add('slide-' + direction);
-  renderRooms();
-}
-
-// Tap mode bar to cycle
-document.getElementById('modeBar').addEventListener('click', function(e) {
-  e.preventDefault(); e.stopPropagation();
-  cycleMode();
-});
-
-// --- Modal ---
-function showModal(title, text, onConfirm) {
-  document.getElementById('modalTitle').textContent = title;
-  document.getElementById('modalText').textContent = text;
-  document.getElementById('modalOverlay').classList.add('visible');
-  pendingAction = onConfirm;
-}
-function hideModal() { document.getElementById('modalOverlay').classList.remove('visible'); pendingAction = null; }
-document.getElementById('modalCancel').addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); hideModal(); });
-document.getElementById('modalConfirm').addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); if (pendingAction) pendingAction(); hideModal(); });
-document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target === this) hideModal(); });
-
-// --- Room Grid ---
-function renderRooms() {
-  var mode = currentMode(); if (!mode) return;
-  var rm = mode.rooms;
-  var grid = document.getElementById('roomGrid');
-  grid.innerHTML = '';
-  rm.forEach(function(room) {
-    var done = getDoneCount(mode, room), total = room.tasks.length;
-    var allDone = done === total && total > 0;
-    var card = document.createElement('div');
-    card.className = 'room-card' + (allDone ? ' all-done' : '');
-    card.setAttribute('data-room', room.id);
-    card.innerHTML = '<div class="room-card-inner">' +
-      '<span class="room-icon">' + room.icon + '</span>' +
-      '<div class="room-info"><div class="room-name">' + room.name + '</div>' +
-      '<div class="room-status"><span class="done-count">' + done + '</span> / ' + total + '</div>' +
-      '<div class="room-progress"><div class="room-progress-bar" style="width:' + (total?(done/total)*100:0) + '%"></div></div></div>' +
-      '<span class="room-arrow">›</span></div>';
-    grid.appendChild(card);
-  });
-}
-
-document.getElementById('roomGrid').addEventListener('click', function(e) {
-  var card = e.target.closest('.room-card');
-  if (card) { var id = card.getAttribute('data-room'); if (id) openRoom(id); }
-});
-
-// --- Navigation ---
-function openRoom(roomId) {
-  currentRoom = currentRooms().find(function(r){ return r.id === roomId; });
-  document.getElementById('roomMenu').classList.add('hidden');
-  document.getElementById('taskView').classList.add('active');
-  document.getElementById('headerCounter').classList.add('visible');
-  document.getElementById('resetCurrentBtn').style.display = '';
-  document.getElementById('headerTitleArea').classList.add('tappable');
-  document.getElementById('headerMain').innerHTML = '<span class="header-room-icon">' + currentRoom.icon + '</span> ' + currentRoom.name;
-  document.getElementById('headerSub').innerHTML = '← Tornar a sales';
+// ---------- Rendering ----------
+function render() {
+  route = parseRoute();
+  ['homeView', 'roomsView', 'taskView'].forEach(function(id) { $(id).classList.remove('active'); });
+  $('backBtn').classList.toggle('visible', route.level > 0);
+  if (!route.mode) renderHome();
+  else if (route.room) renderTasks();
+  else renderRooms();
   window.scrollTo(0, 0);
-  renderTasks();
 }
 
-function goBack() {
-  document.getElementById('roomMenu').classList.remove('hidden');
-  document.getElementById('taskView').classList.remove('active');
-  document.getElementById('headerCounter').classList.remove('visible');
-  document.getElementById('resetCurrentBtn').style.display = 'none';
-  document.getElementById('headerTitleArea').classList.remove('tappable');
-  document.getElementById('headerMain').textContent = 'Radios Novikov';
-  document.getElementById('headerSub').textContent = 'escape room setup';
-  currentRoom = null; renderRooms();
+function setHeader(icon, title, sub) {
+  $('headerMain').innerHTML = (icon ? '<span class="header-room-icon">' + esc(icon) + '</span> ' : '') + esc(title);
+  $('headerSub').textContent = sub;
 }
 
-document.getElementById('headerTitleArea').addEventListener('click', function() {
-  if (this.classList.contains('tappable')) goBack();
-});
+function modeCardHtml(m) {
+  var t = modeTotals(m), pct = t.total ? (t.done / t.total) * 100 : 0, meta;
+  if (modeComplete(m)) meta = 'Fet ✓';
+  else if (t.done > 0) meta = isSingle(m)
+    ? '<span class="done-count">' + t.done + '</span>/' + t.total
+    : '<span class="done-count">' + t.roomsDone + '</span>/' + t.rooms + ' sales';
+  else meta = isSingle(m) ? t.total + ' tasques' : t.rooms + ' sales';
+  return '<span class="mode-emoji">' + esc(m.icon) + '</span>' +
+    '<span class="mode-text"><span class="mode-word">' + esc(m.name) + '</span>' +
+    (m.description ? '<span class="mode-desc" style="display:block">' + esc(m.description) + '</span>' : '') + '</span>' +
+    '<span class="mode-meta">' + meta + '</span>' +
+    (t.done > 0 ? '<span class="mode-progress"><span class="mode-progress-bar" style="display:block;width:' + pct + '%"></span></span>' : '');
+}
 
-document.getElementById('completionBanner').addEventListener('click', function(e) {
-  e.preventDefault(); e.stopPropagation();
-  var next = getNextPendingRoom(); if (next) openRoom(next.id);
-});
-
-document.getElementById('allDoneBanner').addEventListener('click', function(e) {
-  e.preventDefault(); e.stopPropagation(); goBack();
-});
-
-// --- Tasks ---
-function renderTasks() {
-  if (!currentRoom) return;
-  var mode = currentMode();
-  var c = getChecks(mode.id, currentRoom.id), total = currentRoom.tasks.length, done = getDoneCount(mode, currentRoom);
-  document.getElementById('headerCounter').innerHTML = '<span class="hc-done">' + done + '</span>/' + total;
-  document.getElementById('topProgressBar').style.width = (total?(done/total)*100:0) + '%';
-  var list = document.getElementById('taskList'); list.innerHTML = '';
-  currentRoom.tasks.forEach(function(task, i) {
-    var isDone = c[i] === true;
-    var btn = document.createElement('button');
-    btn.className = 'task-btn' + (isDone ? ' done' : '');
-    btn.setAttribute('data-index', i);
-    btn.innerHTML = '<div class="task-status-icon">' + (isDone ? '✓' : (i+1)) + '</div><div class="task-btn-label">' + task + '</div>';
-    list.appendChild(btn);
+function renderHome() {
+  $('homeView').classList.add('active');
+  setHeader('', 'Radios Novikov', 'game master');
+  $('headerCounter').classList.remove('visible');
+  $('bottomBar').classList.remove('visible');
+  var main = $('modeGrid'), maint = $('maintenanceGrid');
+  main.innerHTML = ''; maint.innerHTML = '';
+  modes.forEach(function(m) {
+    var b = document.createElement('button');
+    var t = modeTotals(m);
+    b.className = 'mode-card' + (m.featured ? ' featured' : '') +
+      (modeComplete(m) ? ' complete' : (t.done > 0 ? ' in-progress' : ''));
+    b.setAttribute('data-mode', m.id);
+    b.innerHTML = modeCardHtml(m);
+    (m.group === 'maintenance' ? maint : main).appendChild(b);
   });
-  var cb = document.getElementById('completionBanner'), ab = document.getElementById('allDoneBanner');
-  cb.classList.remove('visible'); ab.classList.remove('visible');
-  if (done === total && total > 0) {
-    var next = getNextPendingRoom();
-    if (next) { document.getElementById('nextRoomLabel').textContent = next.icon + ' ' + next.name; cb.classList.add('visible'); }
-    else { ab.classList.add('visible'); }
+  $('maintenanceSection').style.display = maint.children.length ? '' : 'none';
+}
+
+function renderRooms() {
+  var m = route.mode, t = modeTotals(m);
+  $('roomsView').classList.add('active');
+  setHeader(m.icon, m.name, m.description || '');
+  $('headerCounter').innerHTML = '<span class="hc-done">' + t.roomsDone + '</span>/' + t.rooms;
+  $('headerCounter').classList.add('visible');
+  $('bottomBar').classList.add('visible');
+  $('resetRoomBtn').style.display = 'none';
+  $('resetModeBtn').textContent = '↻ Reset ' + m.name;
+  var grid = $('roomGrid'); grid.innerHTML = '';
+  m.rooms.forEach(function(r) {
+    var d = doneCount(m, r), n = r.tasks.length;
+    var c = document.createElement('button');
+    c.className = 'room-card' + (roomComplete(m, r) ? ' all-done' : '');
+    c.setAttribute('data-room', r.id);
+    c.innerHTML = '<div class="room-card-inner"><span class="room-icon">' + esc(r.icon) + '</span>' +
+      '<div class="room-info"><div class="room-name">' + esc(r.name) + '</div>' +
+      '<div class="room-status"><span class="done-count">' + d + '</span> / ' + n + '</div>' +
+      '<div class="room-progress"><div class="room-progress-bar" style="width:' + (n ? d / n * 100 : 0) + '%"></div></div></div>' +
+      '<span class="room-arrow">›</span></div>';
+    grid.appendChild(c);
+  });
+  $('finishBannerRooms').classList.toggle('visible', modeComplete(m));
+}
+
+function renderTasks() {
+  var m = route.mode, r = route.room;
+  $('taskView').classList.add('active');
+  if (isSingle(m)) setHeader(m.icon, m.name, m.description || '');
+  else setHeader(r.icon, r.name, m.icon + ' ' + m.name);
+  $('bottomBar').classList.add('visible');
+  if (isSingle(m)) {
+    $('resetRoomBtn').style.display = 'none';
+    $('resetModeBtn').textContent = '↻ Reset llista';
+  } else {
+    $('resetRoomBtn').style.display = '';
+    $('resetModeBtn').textContent = '↻ Reset ' + m.name;
   }
+  updateTasks(true);
 }
 
-document.getElementById('taskList').addEventListener('click', function(e) {
-  var btn = e.target.closest('.task-btn');
-  if (btn) { var idx = parseInt(btn.getAttribute('data-index')); if (!isNaN(idx)) toggleTask(idx); }
-});
-
-function toggleTask(i) {
-  var c = getChecks(currentMode().id, currentRoom.id);
-  c[i] = !c[i]; if (!c[i]) delete c[i]; saveChecks(); renderTasks();
-}
-
-// --- Reset ---
-document.getElementById('resetCurrentBtn').addEventListener('click', function(e) {
-  e.preventDefault(); e.stopPropagation();
-  if (currentRoom) {
-    showModal('Reset ' + currentRoom.name + '?', "Es desmarcaran totes les tasques d'aquesta sala.", function() {
-      checkState[stateKey(currentMode().id, currentRoom.id)] = {}; saveChecks(); renderTasks();
+function updateTasks(rebuild) {
+  var m = route.mode, r = route.room, c = getChecks(m, r);
+  var n = r.tasks.length, d = doneCount(m, r);
+  $('headerCounter').innerHTML = '<span class="hc-done">' + d + '</span>/' + n;
+  $('headerCounter').classList.add('visible');
+  $('topProgressBar').style.width = (n ? d / n * 100 : 0) + '%';
+  var list = $('taskList');
+  if (rebuild) {
+    list.innerHTML = '';
+    r.tasks.forEach(function(task, i) {
+      var b = document.createElement('button');
+      b.className = 'task-btn';
+      b.setAttribute('data-index', i);
+      b.style.animationDelay = Math.min(i * 0.02, 0.3) + 's';
+      b.innerHTML = '<div class="task-status-icon"></div><div class="task-btn-label">' + esc(task) + '</div>';
+      list.appendChild(b);
     });
   }
+  Array.prototype.forEach.call(list.children, function(b, i) {
+    var done = c[i] === true;
+    b.classList.toggle('done', done);
+    b.setAttribute('aria-pressed', done ? 'true' : 'false');
+    b.querySelector('.task-status-icon').textContent = done ? '✓' : (i + 1);
+  });
+  var next = null, roomDone = d === n && n > 0;
+  if (roomDone && !isSingle(m)) next = nextPendingRoom(m, r);
+  $('nextBanner').classList.toggle('visible', !!next);
+  if (next) $('nextRoomLabel').textContent = next.icon + ' ' + next.name;
+  $('finishBannerTasks').classList.toggle('visible', roomDone && modeComplete(m));
+}
+
+// ---------- Events ----------
+$('backBtn').addEventListener('click', goUp);
+
+function onModeClick(e) {
+  var b = e.target.closest('.mode-card');
+  if (b) go(b.getAttribute('data-mode'));
+}
+$('modeGrid').addEventListener('click', onModeClick);
+$('maintenanceGrid').addEventListener('click', onModeClick);
+
+$('roomGrid').addEventListener('click', function(e) {
+  var b = e.target.closest('.room-card');
+  if (b) go(route.mode.id + '/' + b.getAttribute('data-room'));
 });
 
-document.getElementById('resetAllBtn').addEventListener('click', function(e) {
-  e.preventDefault(); e.stopPropagation();
-  var mode = currentMode();
-  showModal('Reset ' + mode.name + '?', 'Es desmarcaran totes les tasques de totes les sales en aquest mode.', function() {
-    mode.rooms.forEach(function(r) { checkState[stateKey(mode.id, r.id)] = {}; });
-    saveChecks();
-    if (currentRoom) renderTasks(); else renderRooms();
+$('taskList').addEventListener('click', function(e) {
+  var b = e.target.closest('.task-btn'); if (!b) return;
+  var i = parseInt(b.getAttribute('data-index'), 10), c = getChecks(route.mode, route.room);
+  if (c[i]) delete c[i]; else c[i] = true;
+  saveChecks(); updateTasks(false);
+});
+
+$('nextBanner').addEventListener('click', function() {
+  var next = nextPendingRoom(route.mode, route.room);
+  if (next) replaceWith(route.mode.id + '/' + next.id);
+});
+
+function finishMode() { resetMode(route.mode); goHome(); }
+$('finishBannerTasks').addEventListener('click', finishMode);
+$('finishBannerRooms').addEventListener('click', finishMode);
+
+// ---------- Reset + modal ----------
+function showModal(title, text, onConfirm) {
+  $('modalTitle').textContent = title; $('modalText').textContent = text;
+  $('modalOverlay').classList.add('visible'); pendingAction = onConfirm;
+}
+function hideModal() { $('modalOverlay').classList.remove('visible'); pendingAction = null; }
+$('modalCancel').addEventListener('click', hideModal);
+$('modalConfirm').addEventListener('click', function() { var a = pendingAction; hideModal(); if (a) a(); });
+$('modalOverlay').addEventListener('click', function(e) { if (e.target === this) hideModal(); });
+
+$('resetRoomBtn').addEventListener('click', function() {
+  var m = route.mode, r = route.room; if (!r) return;
+  showModal('Reset ' + r.name + '?', "Es desmarcaran totes les tasques d'aquesta sala.", function() {
+    checkState[stateKey(m, r)] = {}; saveChecks(); updateTasks(false);
   });
 });
+$('resetModeBtn').addEventListener('click', function() {
+  var m = route.mode; if (!m) return;
+  var text = isSingle(m) ? 'Es desmarcaran totes les tasques de la llista.' : 'Es desmarcaran totes les tasques de totes les sales.';
+  showModal('Reset ' + m.name + '?', text, function() { resetMode(m); render(); });
+});
 
-// --- Init ---
+// ---------- Init ----------
 loadChecks();
 loadTasks(function() {
-  try { localStorage.setItem('rn_modes_cache', JSON.stringify(modes)); } catch(e) {}
-  updateModeBar();
-  renderRooms();
-  setTimeout(function() { document.getElementById('loadingScreen').classList.add('hidden'); }, 300);
+  rebuildHistory();
+  render();
+  setTimeout(function() { $('loadingScreen').classList.add('hidden'); }, 300);
 });
 </script>
 </body>
