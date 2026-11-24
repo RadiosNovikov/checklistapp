@@ -18,7 +18,9 @@
             "Encendre TV groga (boto P)",
             "Ordenar Sala",
             "Obrir porta entrada",
-            "Calibrar porta entrada (botó C mando gran)"
+            "Calibrar porta entrada (botó C mando gran)",
+            "Comprovar que queda porta entrada tancada"
+            
           ]
         },
         {
@@ -39,12 +41,13 @@
             "Trampilla waste tancada",
             "Reset gasos Lab (mai al mínim o màxim)",
             "Time machine - obrir porta (iman)",
+            "Treu piles mando TV",
+            "Mando TV a armari taula",
             "Cable blau a armari taula",
             "Tarjeta lab a armari taula",
             "NO tancar el armari de la taula",
             "Recollir llaunes",
             "Tancar porteta gat",
-            "Treu piles mando TV",
             "Recollir clau quarentena",
             "Tancar porta"
           ]
@@ -96,7 +99,8 @@
             "Tarjeta Despatx Penjada",
             "Plom 30A col·locat",
             "Plom 20A al calaix",
-            "Recollir plom 50A"
+            "Recollir plom 50A",
+            "Recollir plom 10A"
           ]
         },
         {
